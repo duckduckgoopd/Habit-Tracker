@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Habit Tracker">
+<title>Habit Tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,700;1,9..144,400;1,9..144,700&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --g50:#f0faf6;--g100:#d6f0e6;--g200:#9FE1CB;--g400:#1D9E75;--g600:#0F6E56;--g800:#085041;
+  --accent:#1D9E75;--accent2:#0F6E56;
+  --bg:#f2f7f4;--bg2:#ffffff;--bg3:#e8f2ec;
+  --txt:#1a2e1e;--txt2:#4a6b56;--txt3:#8aab96;
+  --border:rgba(15,110,86,0.14);--border2:rgba(15,110,86,0.26);
+  --serif:'Fraunces',Georgia,serif;--sans:'Nunito',sans-serif;
+  --radius:14px;
+}
+@media(prefers-color-scheme:dark){:root{--bg:#0f1a14;--bg2:#162019;--bg3:#1e2e22;--txt:#e0ede6;--txt2:#8aab96;--txt3:#4a6b56;--border:rgba(29,158,117,0.16);--border2:rgba(29,158,117,0.3);--g50:#0d1f16;--g100:#122518;--g200:#1a5a3a;--g400:#2DB885;--g600:#4DC8A0;--g800:#7DD8BA;--accent:#2DB885;--accent2:#1D9E75;}}
+html,body{height:100%;font-family:var(--sans);background:var(--bg);color:var(--txt)}
+.app{max-width:820px;margin:0 auto;padding:16px}
+.appbar{display:flex;align-items:flex-start;justify-content:space-between;padding:10px 0 20px;flex-wrap:wrap;gap:12px;border-bottom:2.5px dashed var(--border2);margin-bottom:22px}
+.appbar-title{font-family:var(--serif);font-size:36px;font-weight:700;color:var(--g600);letter-spacing:-.02em;line-height:1}
+.appbar-sub{font-family:var(--sans);font-size:10px;font-weight:900;letter-spacing:.15em;text-transform:uppercase;color:var(--txt3);margin-top:4px}
+.tabs{display:flex;gap:4px;background:var(--bg3);border:1.5px solid var(--border2);border-radius:22px;padding:4px;flex-wrap:wrap}
+.tab{padding:7px 14px;border:none;border-radius:18px;font-size:11px;font-weight:900;cursor:pointer;background:transparent;color:var(--txt2);font-family:var(--sans);transition:all .18s;letter-spacing:.05em;text-transform:uppercase}
+.tab:hover{color:var(--txt)}.tab.active{background:var(--accent);color:#fff}
+.card{background:var(--bg2);border:1.5px solid var(--border2);border-radius:var(--radius);padding:20px 22px;margin-bottom:14px;position:relative;overflow:hidden}
+.card-stripe{position:absolute;top:0;left:0;right:0;height:5px;background:repeating-linear-gradient(90deg,var(--g400) 0,var(--g400) 7px,transparent 7px,transparent 14px);opacity:.3}
+.card-title{font-family:var(--serif);font-size:21px;font-weight:700;font-style:italic;color:var(--g600);margin-bottom:14px}
+.page{animation:fadeIn .2s ease}.page-hidden{display:none}
+@keyframes fadeIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+input[type=text],textarea{width:100%;border:1.5px solid var(--border2);border-radius:10px;padding:9px 13px;font-size:14px;font-weight:600;color:var(--txt);font-family:var(--sans);background:var(--bg3);outline:none;transition:border-color .15s}
+input[type=text]:focus,textarea:focus{border-color:var(--accent);background:var(--bg2)}
+textarea{resize:vertical;min-height:100px;line-height:1.65;font-weight:400}
+::placeholder{font-weight:400;color:var(--txt3)}
+.btn{padding:9px 18px;border:1.5px solid var(--border2);border-radius:20px;background:var(--bg3);color:var(--txt);font-size:11px;font-weight:900;cursor:pointer;font-family:var(--sans);transition:all .15s;letter-spacing:.05em;text-transform:uppercase}
+.btn:hover{background:var(--bg);border-color:var(--g400)}.btn-accent{background:var(--accent);color:#fff;border-color:var(--accent)}.btn-accent:hover{background:var(--accent2)}.btn-sm{padding:5px 13px;font-size:10px}.btn-danger{color:#b03030;border-color:rgba(176,48,48,.28)}.btn-danger:hover{background:rgba(176,48,48,.06)}
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:18px}
+.stat-card{background:var(--g100);border:1.5px solid var(--g200);border-radius:var(--radius);padding:14px;text-align:center}
+.stat-num{font-family:var(--serif);font-size:34px;font-weight:700;color:var(--g600)}.stat-lbl{font-size:10px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-top:4px}
+.month-nav{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.month-nav button{border:1.5px solid var(--border2);background:var(--bg3);color:var(--txt);border-radius:20px;padding:5px 14px;cursor:pointer;font-size:11px;font-family:var(--sans);font-weight:900;transition:all .12s;text-transform:uppercase;letter-spacing:.05em}
+.month-nav button:hover{border-color:var(--g400)}.month-lbl{font-family:var(--serif);font-size:20px;font-weight:700;font-style:italic;color:var(--g600);min-width:150px;text-align:center}
+.grid-outer{overflow-x:auto;border:1.5px solid var(--border2);border-radius:var(--radius);background:var(--bg2)}
+table{border-collapse:collapse;width:100%}th,td{border:0.5px solid var(--border)}
+.habit-col{min-width:130px;padding:6px 10px;font-size:11px;font-weight:900;background:var(--bg2);position:sticky;left:0;z-index:2;text-transform:uppercase;letter-spacing:.05em}
+.habit-col-head{min-width:130px;padding:5px 10px;background:var(--bg2);position:sticky;left:0;z-index:3}
+.day-head{min-width:27px;width:27px;text-align:center;padding:3px 1px;font-size:10px;font-weight:800;color:var(--txt2);background:var(--bg2);vertical-align:bottom;user-select:none}
+.day-head.wknd{color:var(--txt3)}.day-head.td-h{background:var(--g100)}
+.day-num{font-size:11px;font-weight:900;display:block}.day-ltr{font-size:8px;display:block;margin-bottom:1px;font-weight:700}
+.day-cell{width:27px;min-width:27px;height:28px;text-align:center;vertical-align:middle;cursor:pointer;transition:background .1s;user-select:none}
+.day-cell:hover{background:var(--g100)}.day-cell.future{cursor:default;opacity:.22}.day-cell.future:hover{background:transparent}.day-cell.td-c{background:var(--g50)}
+.x-mark{font-size:15px;font-weight:900;color:var(--g600);line-height:1}
+.del-h{opacity:0;border:none;background:none;color:var(--txt3);cursor:pointer;font-size:15px;padding:0 3px;transition:opacity .15s;line-height:1}.habit-col:hover .del-h{opacity:1}
+.freq-badge{font-size:9px;color:var(--accent);font-weight:800;margin-left:4px}
+.no-content{padding:32px;text-align:center;color:var(--txt3);font-size:15px;font-family:var(--serif);font-style:italic}
+.freq-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.freq-chip{padding:6px 14px;border:1.5px solid var(--border2);border-radius:20px;font-size:10px;font-weight:900;cursor:pointer;background:var(--bg3);color:var(--txt2);font-family:var(--sans);transition:all .12s;text-transform:uppercase;letter-spacing:.05em}
+.freq-chip.sel{background:var(--accent);color:#fff;border-color:var(--accent)}
+.prompt-box{background:var(--g50);border:1.5px dashed var(--g200);border-radius:var(--radius);padding:14px 16px;margin-bottom:14px}
+.prompt-box-label{font-size:10px;font-weight:900;color:var(--accent);text-transform:uppercase;letter-spacing:.12em;margin-bottom:10px}
+.prompt-item{display:flex;gap:9px;padding:6px 0;border-bottom:1px dashed var(--g200)}.prompt-item:last-child{border-bottom:none}
+.prompt-idx{font-family:var(--serif);font-size:17px;font-weight:700;color:var(--g200);width:18px;flex-shrink:0}
+.prompt-text{font-family:var(--serif);font-size:14px;font-style:italic;color:var(--g600);line-height:1.55}
+.grat-row{display:flex;gap:8px;align-items:center;margin-bottom:8px}
+.grat-num{font-family:var(--serif);font-size:20px;font-weight:700;color:var(--g200);width:22px;flex-shrink:0;text-align:center}
+.del-grat{background:none;border:none;color:var(--txt3);cursor:pointer;font-size:18px;padding:0 4px;line-height:1;flex-shrink:0}
+.entry-card{background:var(--bg2);border:1.5px solid var(--border);border-radius:var(--radius);padding:16px 16px 16px 20px;margin-bottom:10px;position:relative}
+.entry-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--accent);opacity:.45;border-radius:4px 0 0 4px}
+.entry-date{font-size:10px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:var(--txt3);margin-bottom:7px}
+.entry-prompt{font-size:12px;color:var(--accent);font-style:italic;font-family:var(--serif);margin-bottom:7px}
+.entry-body{font-size:14px;line-height:1.65;color:var(--txt);white-space:pre-wrap}
+.entry-grats{margin-top:10px;border-top:1px dashed var(--border2);padding-top:10px}
+.grat-item{display:flex;align-items:flex-start;gap:8px;font-size:13px;color:var(--g600);padding:3px 0;line-height:1.4;font-weight:700}
+.grat-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);flex-shrink:0;margin-top:5px}
+.entry-actions{display:flex;gap:6px;margin-top:10px}
+.todo-input-row{display:flex;gap:8px;margin-bottom:12px}
+.todo-item{display:flex;align-items:center;gap:10px;padding:10px 13px;background:var(--bg3);border:1px solid var(--border);border-radius:10px;margin-bottom:7px;transition:all .15s}
+.todo-item.done-item{opacity:.5}.todo-item.done-item .todo-label{text-decoration:line-through;color:var(--txt3)}
+.todo-check{width:22px;height:22px;border-radius:7px;border:2px solid var(--border2);background:var(--bg2);cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .15s;font-size:13px;font-weight:900;color:transparent}
+.todo-check.checked{background:var(--accent);border-color:var(--accent);color:#fff}
+.todo-label{font-size:14px;font-weight:600;flex:1;color:var(--txt);line-height:1.3}
+.todo-del{background:none;border:none;color:var(--txt3);cursor:pointer;font-size:17px;padding:0 4px;opacity:0;transition:opacity .15s;flex-shrink:0}.todo-item:hover .todo-del{opacity:1}
+.todo-section-head{font-size:10px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:var(--txt3);margin:16px 0 8px;padding-bottom:5px;border-bottom:1px dashed var(--border2)}
+.media-type-row{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:12px}
+.media-chip{padding:6px 13px;border:1.5px solid var(--border2);border-radius:20px;font-size:10px;font-weight:900;cursor:pointer;background:var(--bg3);color:var(--txt2);font-family:var(--sans);transition:all .12s;text-transform:uppercase;letter-spacing:.05em}
+.media-chip.sel{background:var(--g600);color:#fff;border-color:var(--g600)}
+.media-item{display:flex;align-items:flex-start;gap:10px;padding:10px 13px;background:var(--bg3);border:1px solid var(--border);border-radius:10px;margin-bottom:7px}
+.media-badge{font-size:10px;font-weight:900;letter-spacing:.05em;text-transform:uppercase;padding:3px 9px;border-radius:10px;flex-shrink:0;margin-top:2px}
+.b-podcast{background:#d6f0e6;color:var(--g600)}.b-music{background:#dce8f5;color:#185FA5}.b-show{background:#f5e8e6;color:#993C1D}.b-movie{background:#f5e6f0;color:#72243E}.b-book{background:#f5f0e6;color:#633806}.b-other{background:var(--bg3);color:var(--txt2)}
+.media-info{flex:1;min-width:0}.media-title{font-size:14px;font-weight:700;color:var(--txt);line-height:1.3}.media-date{font-size:11px;color:var(--txt3);margin-top:2px;font-weight:600}
+.media-del{background:none;border:none;color:var(--txt3);cursor:pointer;font-size:17px;padding:0 4px;opacity:0;transition:opacity .15s;flex-shrink:0}.media-item:hover .media-del{opacity:1}
+.settings-title{font-family:var(--serif);font-size:19px;font-weight:700;font-style:italic;color:var(--g600);margin-bottom:12px;padding-bottom:7px;border-bottom:1.5px dashed var(--border2)}
+.setting-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px dashed var(--border);gap:12px}.setting-row:last-child{border-bottom:none}
+.setting-lbl{font-size:13px;font-weight:800}.setting-sub{font-size:12px;color:var(--txt2);margin-top:2px;font-weight:400}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:100;align-items:center;justify-content:center;padding:16px}
+.modal-overlay.open{display:flex}
+.modal{background:var(--bg2);border:1.5px solid var(--border2);border-radius:18px;padding:24px;width:380px;max-width:100%;position:relative;overflow:hidden}
+.modal-stripe{position:absolute;top:0;left:0;right:0;height:5px;background:repeating-linear-gradient(90deg,var(--g400) 0,var(--g400) 8px,transparent 8px,transparent 16px);opacity:.35}
+.modal-title{font-family:var(--serif);font-size:22px;font-weight:700;font-style:italic;color:var(--g600);margin-bottom:16px}
+.modal-foot{display:flex;gap:8px;margin-top:14px}.modal-foot button{flex:1}
+.field-label{display:block;font-size:10px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:var(--txt2);margin-bottom:6px}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--g600);color:#fff;padding:10px 22px;border-radius:20px;font-size:11px;font-family:var(--sans);font-weight:900;letter-spacing:.08em;text-transform:uppercase;opacity:0;transition:opacity .25s;pointer-events:none;z-index:200;white-space:nowrap}
+.toast.show{opacity:1}
+@media(max-width:540px){.appbar{flex-direction:column;align-items:flex-start}.stat-grid{grid-template-columns:1fr 1fr}.tabs{gap:3px}.tab{padding:6px 10px;font-size:10px}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="appbar">
+    <div>
+      <div class="appbar-title">Habit Tracker</div>
+      <div class="appbar-sub">your daily companion</div>
+    </div>
+    <div class="tabs">
+      <button class="tab active" onclick="nav('habits')">Habits</button>
+      <button class="tab" onclick="nav('journal')">Journal</button>
+      <button class="tab" onclick="nav('todos')">To-Do</button>
+      <button class="tab" onclick="nav('media')">Media</button>
+      <button class="tab" onclick="nav('settings')">Settings</button>
+    </div>
+  </div>
+
+  <div id="page-habits" class="page">
+    <div class="stat-grid" id="habit-stats"></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px">
+      <div class="month-nav">
+        <button onclick="chM(-1)">&#8592;</button>
+        <span class="month-lbl" id="month-lbl"></span>
+        <button onclick="chM(1)">&#8594;</button>
+      </div>
+      <button class="btn btn-sm btn-accent" onclick="openAddHabit()">+ Add Habit</button>
+    </div>
+    <div class="grid-outer" id="habit-grid"></div>
+  </div>
+
+  <div id="page-journal" class="page page-hidden">
+    <div class="card">
+      <div class="card-stripe"></div>
+      <div class="card-title" id="journal-date-hd"></div>
+      <div class="prompt-box" id="daily-prompts-box"></div>
+      <label class="field-label" style="margin-bottom:8px">Today's Reflection</label>
+      <textarea id="journal-text" placeholder="Write freely..."></textarea>
+      <div style="margin:14px 0 8px" class="field-label">Grateful For Today</div>
+      <div id="grat-inputs"></div>
+      <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+        <button class="btn btn-sm" onclick="addGratLine()" style="color:var(--g600);border-color:var(--g400)">+ Add Line</button>
+        <button class="btn btn-sm btn-accent" onclick="saveEntry()">Save Entry</button>
+      </div>
+    </div>
+    <div id="past-entries"></div>
+  </div>
+
+  <div id="page-todos" class="page page-hidden">
+    <div class="card">
+      <div class="card-stripe"></div>
+      <div class="card-title">To-Do</div>
+      <div class="todo-input-row">
+        <input type="text" id="todo-input" placeholder="Add a task...">
+        <button class="btn btn-accent" onclick="addTodo()">Add</button>
+      </div>
+      <div id="todo-active-list"></div>
+      <div id="todo-done-section"></div>
+    </div>
+  </div>
+
+  <div id="page-media" class="page page-hidden">
+    <div class="card">
+      <div class="card-stripe"></div>
+      <div class="card-title">Log Media</div>
+      <label class="field-label" style="margin-bottom:7px">Type</label>
+      <div class="media-type-row">
+        <span class="media-chip sel" data-t="Podcast" onclick="selMedia(this)">Podcast</span>
+        <span class="media-chip" data-t="Music" onclick="selMedia(this)">Music</span>
+        <span class="media-chip" data-t="Show" onclick="selMedia(this)">Show</span>
+        <span class="media-chip" data-t="Movie" onclick="selMedia(this)">Movie</span>
+        <span class="media-chip" data-t="Book" onclick="selMedia(this)">Book</span>
+        <span class="media-chip" data-t="Other" onclick="selMedia(this)">Other</span>
+      </div>
+      <div style="display:flex;gap:8px">
+        <input type="text" id="media-input" placeholder="Title, episode, artist..." style="flex:1">
+        <button class="btn btn-accent" onclick="addMedia()">Log It</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-stripe"></div>
+      <div class="card-title">Recently Logged</div>
+      <div id="media-list"></div>
+    </div>
+  </div>
+
+  <div id="page-settings" class="page page-hidden">
+    <div class="card">
+      <div class="card-stripe"></div>
+      <div class="settings-title">Habits</div>
+      <div id="settings-habits"></div>
+      <button class="btn btn-sm btn-accent" onclick="openAddHabit()" style="margin-top:10px">+ Add Habit</button>
+    </div>
+    <div class="card">
+      <div class="card-stripe"></div>
+      <div class="settings-title">Custom Journal Prompts</div>
+      <div id="settings-prompts"></div>
+      <div style="display:flex;gap:8px;margin-top:12px">
+        <input type="text" id="new-prompt-inp" placeholder="Write a custom prompt...">
+        <button class="btn btn-sm btn-accent" onclick="addCustomPrompt()">Add</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-stripe"></div>
+      <div class="settings-title">Data</div>
+      <div class="setting-row">
+        <div><div class="setting-lbl">Export Data</div><div class="setting-sub">Download all data as JSON</div></div>
+        <button class="btn btn-sm" onclick="exportData()">Export</button>
+      </div>
+      <div class="setting-row">
+        <div><div class="setting-lbl">Clear All Data</div><div class="setting-sub">Permanently delete everything</div></div>
+        <button class="btn btn-sm btn-danger" onclick="clearData()">Clear</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="habit-modal" onclick="closeMIf(event,'habit-modal')">
+  <div class="modal">
+    <div class="modal-stripe"></div>
+    <div class="modal-title">Add Habit</div>
+    <label class="field-label">Name</label>
+    <input type="text" id="new-habit-name" placeholder="e.g. Read, Vitamins, Walk..." style="margin-bottom:14px">
+    <label class="field-label">Frequency</label>
+    <div class="freq-row">
+      <span class="freq-chip sel" data-f="daily" onclick="selFreq(this)">Daily</span>
+      <span class="freq-chip" data-f="2x/week" onclick="selFreq(this)">2x / Week</span>
+      <span class="freq-chip" data-f="3x/week" onclick="selFreq(this)">3x / Week</span>
+      <span class="freq-chip" data-f="weekly" onclick="selFreq(this)">Weekly</span>
+    </div>
+    <div class="modal-foot">
+      <button class="btn" onclick="closeM('habit-modal')">Cancel</button>
+      <button class="btn btn-accent" onclick="addHabit()">Add Habit</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const TODAY=new Date(),TSTR=fmtD(TODAY);
+let vY=TODAY.getFullYear(),vM=TODAY.getMonth(),curFreq='daily',curMediaType='Podcast';
+const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
+const DAYS=['S','M','T','W','T','F','S'];
+const BASE_PROMPTS=['What small moment brought you joy today?','Who made your life a little better this week?','What challenged you, and what did it teach you?','Describe something beautiful you noticed today.','What are you most looking forward to right now?','What is something your body did well today?','What made you laugh or genuinely smile recently?','What opportunity are you grateful to have in your life?','What skill or quality in yourself are you thankful for?','What simple pleasure did you enjoy today?','Who in your life are you most grateful for, and why?','What is going better than you expected?','What is a memory that still makes you smile?','What part of your daily routine feels like a gift?','What are you proud of yourself for this week?','What in nature are you grateful for today?','What did someone do for you recently that you appreciated?','What freedom or privilege do you often take for granted?','What are you learning that excites you?','What would you miss most if it disappeared from your life?'];
+function getDailyPrompts(ds){const all=[...BASE_PROMPTS,...(D.customPrompts||[])];const n=parseInt(ds.replace(/-/g,''))%all.length;return[all[n%all.length],all[(n+7)%all.length],all[(n+13)%all.length]];}
+let D={habits:[],marks:{},entries:{},customPrompts:[],todos:[],media:[]};
+function loadData(){try{const r=localStorage.getItem('ht-v2');if(r)D=JSON.parse(r);}catch(e){}['habits','customPrompts','todos','media'].forEach(k=>{if(!D[k])D[k]=[];});if(!D.marks)D.marks={};if(!D.entries)D.entries={};}
+function saveData(){try{localStorage.setItem('ht-v2',JSON.stringify(D));}catch(e){}}
+function fmtD(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function daysInM(y,m){return new Date(y,m+1,0).getDate();}
+function dayLtr(y,m,d){return DAYS[new Date(y,m,d).getDay()];}
+function isWknd(y,m,d){const w=new Date(y,m,d).getDay();return w===0||w===6;}
+function escH(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2000);}
+function nav(p){['habits','journal','todos','media','settings'].forEach(n=>{document.getElementById('page-'+n).classList.toggle('page-hidden',n!==p);});document.querySelectorAll('.tab').forEach((b,i)=>{b.classList.toggle('active',['habits','journal','todos','media','settings'][i]===p);});if(p==='journal')initJournal();if(p==='settings')renderSettings();if(p==='todos')renderTodos();if(p==='media')renderMedia();}
+function chM(d){vM+=d;if(vM>11){vM=0;vY++;}if(vM<0){vM=11;vY--;}renderHabits();}
+function renderHabits(){document.getElementById('month-lbl').textContent=MONTHS[vM]+' '+vY;renderStats();renderGrid();}
+function renderStats(){const el=document.getElementById('habit-stats');if(!D.habits.length){el.innerHTML='';return;}const isThis=vY===TODAY.getFullYear()&&vM===TODAY.getMonth();const upTo=isThis?TODAY.getDate():daysInM(vY,vM);let total=0,possible=0;D.habits.filter(h=>h.freq==='daily').forEach(h=>{for(let d=1;d<=upTo;d++){possible++;if(D.marks[h.id+'|'+fmtD(new Date(vY,vM,d))])total++;}});const pct=possible?Math.round(total/possible*100):0;let streak=0,cur=0;if(D.habits.length){const h=D.habits[0];for(let d=1;d<=upTo;d++){if(D.marks[h.id+'|'+fmtD(new Date(vY,vM,d))]){cur++;if(cur>streak)streak=cur;}else cur=0;}streak=cur;}const jCount=Object.keys(D.entries).filter(k=>k.startsWith(vY+'-'+String(vM+1).padStart(2,'0'))).length;el.innerHTML=`<div class="stat-card"><div class="stat-num">${pct}%</div><div class="stat-lbl">Completion</div></div><div class="stat-card"><div class="stat-num">${streak}</div><div class="stat-lbl">Current Run</div></div><div class="stat-card"><div class="stat-num">${jCount}</div><div class="stat-lbl">Journal Entries</div></div>`;}
+function renderGrid(){const el=document.getElementById('habit-grid');if(!D.habits.length){el.innerHTML='<div class="no-content">No habits yet — add one above</div>';return;}const days=daysInM(vY,vM);let h='<table><thead><tr><th class="habit-col-head" style="font-size:10px;color:var(--txt3);font-weight:900;padding:5px 10px;text-align:left;text-transform:uppercase;letter-spacing:.08em">Habit</th>';for(let d=1;d<=days;d++){const ds=fmtD(new Date(vY,vM,d)),it=ds===TSTR;h+=`<th class="day-head${isWknd(vY,vM,d)?' wknd':''}${it?' td-h':''}"><span class="day-num">${d}</span><span class="day-ltr">${dayLtr(vY,vM,d)}</span></th>`;}h+='</tr></thead><tbody>';D.habits.forEach(hab=>{h+=`<tr><td class="habit-col"><div style="display:flex;align-items:center;justify-content:space-between;gap:4px">${escH(hab.name)}${hab.freq!=='daily'?`<span class="freq-badge">${hab.freq}</span>`:''}<button class="del-h" onclick="delHabit('${hab.id}')" title="remove">&#215;</button></div></td>`;for(let d=1;d<=days;d++){const ds=fmtD(new Date(vY,vM,d)),fut=ds>TSTR,marked=!!D.marks[hab.id+'|'+ds],it=ds===TSTR;h+=`<td class="day-cell${fut?' future':''}${it?' td-c':''}"${!fut?` onclick="toggle('${hab.id}','${ds}')"`:''}>${marked?'<span class="x-mark">&#x2715;</span>':''}</td>`;}h+='</tr>';});h+='</tbody></table>';el.innerHTML=h;}
+function toggle(id,ds){const k=id+'|'+ds;if(D.marks[k])delete D.marks[k];else D.marks[k]=1;saveData();renderGrid();renderStats();}
+function openAddHabit(){document.getElementById('new-habit-name').value='';curFreq='daily';document.querySelectorAll('.freq-chip').forEach(c=>c.classList.toggle('sel',c.dataset.f==='daily'));document.getElementById('habit-modal').classList.add('open');setTimeout(()=>document.getElementById('new-habit-name').focus(),80);}
+function selFreq(el){curFreq=el.dataset.f;document.querySelectorAll('.freq-chip').forEach(c=>c.classList.toggle('sel',c===el));}
+function addHabit(){const n=document.getElementById('new-habit-name').value.trim();if(!n)return;D.habits.push({id:Date.now().toString(36)+Math.random().toString(36).slice(2,5),name:n,freq:curFreq});saveData();closeM('habit-modal');renderHabits();renderSettings();}
+function delHabit(id){if(!confirm('Remove this habit and all its data?'))return;D.habits=D.habits.filter(h=>h.id!==id);Object.keys(D.marks).forEach(k=>{if(k.startsWith(id+'|'))delete D.marks[k];});saveData();renderHabits();renderSettings();}
+function initJournal(){document.getElementById('journal-date-hd').textContent=TODAY.toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric'});const prompts=getDailyPrompts(TSTR);document.getElementById('daily-prompts-box').innerHTML='<div class="prompt-box-label">Today\'s Prompts</div>'+prompts.map((p,i)=>`<div class="prompt-item"><span class="prompt-idx">${i+1}</span><span class="prompt-text">${escH(p)}</span></div>`).join('');const ex=D.entries[TSTR];document.getElementById('journal-text').value=ex?.text||'';document.getElementById('grat-inputs').innerHTML='';(ex?.gratitude||['','']).forEach(g=>addGratLine(g));renderEntries();}
+function addGratLine(val=''){const wrap=document.getElementById('grat-inputs');const idx=wrap.children.length+1;const row=document.createElement('div');row.className='grat-row';row.innerHTML=`<span class="grat-num">${idx}</span><input type="text" placeholder="I am grateful for..." value="${escH(val)}"><button class="del-grat" onclick="this.parentElement.remove();renumGrats()">&#215;</button>`;wrap.appendChild(row);}
+function renumGrats(){document.querySelectorAll('.grat-num').forEach((s,i)=>s.textContent=i+1);}
+function saveEntry(){const text=document.getElementById('journal-text').value.trim();const grats=[...document.querySelectorAll('#grat-inputs input')].map(i=>i.value.trim()).filter(Boolean);if(!text&&!grats.length){showToast('Nothing to save yet');return;}D.entries[TSTR]={text,gratitude:grats,prompts:getDailyPrompts(TSTR),ts:Date.now()};saveData();renderEntries();showToast('Entry saved');}
+function renderEntries(){const el=document.getElementById('past-entries');const sorted=Object.entries(D.entries).sort((a,b)=>b[0].localeCompare(a[0]));if(!sorted.length){el.innerHTML='<div class="no-content">No entries yet — write your first one above</div>';return;}el.innerHTML=sorted.map(([d,e])=>{const label=d===TSTR?'Today':new Date(d+'T12:00:00').toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric',year:'numeric'});return`<div class="entry-card"><div class="entry-date">${label}</div>${e.prompts?.length?`<div class="entry-prompt">${escH(e.prompts[0])}</div>`:''}${e.text?`<div class="entry-body">${escH(e.text)}</div>`:''}${e.gratitude?.length?`<div class="entry-grats">${e.gratitude.map(g=>`<div class="grat-item"><span class="grat-dot"></span>${escH(g)}</div>`).join('')}</div>`:''}<div class="entry-actions"><button class="btn btn-sm" onclick="editEntry('${d}')">Edit</button><button class="btn btn-sm btn-danger" onclick="delEntry('${d}')">Delete</button></div></div>`;}).join('');}
+function editEntry(d){const e=D.entries[d];if(!e)return;document.getElementById('journal-text').value=e.text||'';document.getElementById('grat-inputs').innerHTML='';(e.gratitude||[]).forEach(g=>addGratLine(g));window.scrollTo({top:0,behavior:'smooth'});}
+function delEntry(d){if(!confirm('Delete this entry?'))return;delete D.entries[d];saveData();renderEntries();}
+function addTodo(){const inp=document.getElementById('todo-input');const txt=inp.value.trim();if(!txt)return;D.todos.unshift({id:Date.now().toString(36),text:txt,done:false,date:TSTR});inp.value='';saveData();renderTodos();}
+function toggleTodo(id){const t=D.todos.find(x=>x.id===id);if(t)t.done=!t.done;saveData();renderTodos();}
+function delTodo(id){D.todos=D.todos.filter(x=>x.id!==id);saveData();renderTodos();}
+function renderTodos(){const active=D.todos.filter(t=>!t.done),done=D.todos.filter(t=>t.done);document.getElementById('todo-active-list').innerHTML=active.length?active.map(t=>`<div class="todo-item"><div class="todo-check" onclick="toggleTodo('${t.id}')"></div><span class="todo-label">${escH(t.text)}</span><button class="todo-del" onclick="delTodo('${t.id}')">&#215;</button></div>`).join(''):'<div style="color:var(--txt3);font-size:14px;padding:8px 0;font-family:var(--serif);font-style:italic">Nothing pending — nice!</div>';document.getElementById('todo-done-section').innerHTML=done.length?`<div class="todo-section-head">Completed (${done.length})</div>`+done.slice(0,20).map(t=>`<div class="todo-item done-item"><div class="todo-check checked" onclick="toggleTodo('${t.id}')">&#x2713;</div><span class="todo-label">${escH(t.text)}</span><button class="todo-del" onclick="delTodo('${t.id}')">&#215;</button></div>`).join(''):'';}
+function selMedia(el){curMediaType=el.dataset.t;document.querySelectorAll('.media-chip').forEach(c=>c.classList.toggle('sel',c===el));}
+function addMedia(){const inp=document.getElementById('media-input');const txt=inp.value.trim();if(!txt)return;D.media.unshift({id:Date.now().toString(36),title:txt,type:curMediaType,date:TSTR});inp.value='';saveData();renderMedia();showToast('Logged!');}
+function delMedia(id){D.media=D.media.filter(x=>x.id!==id);saveData();renderMedia();}
+const BCLS={Podcast:'b-podcast',Music:'b-music',Show:'b-show',Movie:'b-movie',Book:'b-book',Other:'b-other'};
+function renderMedia(){const el=document.getElementById('media-list');if(!D.media.length){el.innerHTML='<div class="no-content">Nothing logged yet</div>';return;}el.innerHTML=D.media.slice(0,60).map(m=>{const dl=m.date===TSTR?'Today':new Date(m.date+'T12:00:00').toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'});return`<div class="media-item"><span class="media-badge ${BCLS[m.type]||'b-other'}">${escH(m.type)}</span><div class="media-info"><div class="media-title">${escH(m.title)}</div><div class="media-date">${dl}</div></div><button class="media-del" onclick="delMedia('${m.id}')">&#215;</button></div>`;}).join('');}
+function renderSettings(){document.getElementById('settings-habits').innerHTML=D.habits.length?D.habits.map(h=>`<div class="setting-row"><div><div class="setting-lbl">${escH(h.name)}</div><div class="setting-sub">${h.freq}</div></div><button class="btn btn-sm btn-danger" onclick="delHabit('${h.id}')">Remove</button></div>`).join(''):'<div style="font-size:13px;color:var(--txt3);padding:6px 0">No habits yet</div>';document.getElementById('settings-prompts').innerHTML=(D.customPrompts||[]).length?D.customPrompts.map((p,i)=>`<div class="setting-row"><div class="setting-lbl" style="font-size:13px;font-weight:400;flex:1">${escH(p)}</div><button class="btn btn-sm btn-danger" onclick="delCustomPrompt(${i})">Remove</button></div>`).join(''):'<div style="font-size:13px;color:var(--txt3);padding:6px 0">No custom prompts</div>';}
+function addCustomPrompt(){const v=document.getElementById('new-prompt-inp').value.trim();if(!v)return;D.customPrompts.push(v);document.getElementById('new-prompt-inp').value='';saveData();renderSettings();showToast('Prompt added');}
+function delCustomPrompt(i){D.customPrompts.splice(i,1);saveData();renderSettings();}
+function exportData(){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(D,null,2)],{type:'application/json'}));a.download='habit-tracker-data.json';a.click();}
+function clearData(){if(!confirm('This will permanently delete all data. Are you sure?'))return;D={habits:[],marks:{},entries:{},customPrompts:[],todos:[],media:[]};saveData();renderHabits();renderSettings();renderTodos();renderMedia();showToast('Data cleared');}
+function closeM(id){document.getElementById(id).classList.remove('open');}
+function closeMIf(e,id){if(e.target===document.getElementById(id))closeM(id);}
+document.getElementById('new-habit-name').addEventListener('keydown',e=>{if(e.key==='Enter')addHabit();});
+document.getElementById('new-prompt-inp').addEventListener('keydown',e=>{if(e.key==='Enter')addCustomPrompt();});
+document.getElementById('todo-input').addEventListener('keydown',e=>{if(e.key==='Enter')addTodo();});
+document.getElementById('media-input').addEventListener('keydown',e=>{if(e.key==='Enter')addMedia();});
+loadData();renderHabits();
+</script>
+</body>
+</html>
